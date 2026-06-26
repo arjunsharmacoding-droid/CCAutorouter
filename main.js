@@ -407,45 +407,43 @@ function getOffsetCost(offset) {
 out.push(maxFinalMana)
 return out
 }
-
-
 	
-	function choose(arr, roll) {
-		return arr[Math.floor(roll * arr.length)];
-	}
+function choose(arr, roll) {
+	return arr[Math.floor(roll * arr.length)];
+}
 
-	function getGfd(spells, roll) {
-		return spells[Math.floor(roll[0] * spells.length)];
-	}
+function getGfd(spells, roll) {
+	return spells[Math.floor(roll[0] * spells.length)];
+}
 
-	function check_cookies(season, success, dragonflight, roll) {
-		let rolls = 2
-		if (success !== false) {
-			if (season === true) {
-				rolls = 3
-			}
-
-			var choices = [];
-			choices.push('Frenzy', 'Lucky');
-			if (!dragonflight) choices.push('Click Frenzy');
-			if (roll[0+rolls] < 0.1) choices.push('Cookie Storm', 'Cookie Storm', 'Blab');
-			if (roll[1+rolls] < 0.25) choices.push('Building Special');
-			if (roll[2+rolls] < 0.15) choices = ['Cookie Storm Drop'];
-			if (roll[3+rolls] < 0.0001) choices.push('Free Sugar Lump');
-			return choose(choices, roll[4+rolls]);;
-		} else {
-			let rolls = 2
-			if (season == true) {
-				rolls = 3
-			}
-			var choices = [];
-			choices.push('Clot', 'Ruin');
-			if (roll[0+rolls] < 0.1) choices.push('Cursed Finger', 'Elder Frenzy');
-			if (roll[1+rolls] < 0.003) choices.push('Free Sugar Lump');
-			if (roll[2+rolls] < 0.1) choices = ['Blab'];
-			return choose(choices, roll[3+rolls]);;
+function check_cookies(season, success, dragonflight, roll) {
+	let rolls = 2
+	if (success !== false) {
+		if (season === true) {
+			rolls = 3
 		}
+
+		var choices = [];
+		choices.push('Frenzy', 'Lucky');
+		if (!dragonflight) choices.push('Click Frenzy');
+		if (roll[0+rolls] < 0.1) choices.push('Cookie Storm', 'Cookie Storm', 'Blab');
+		if (roll[1+rolls] < 0.25) choices.push('Building Special');
+		if (roll[2+rolls] < 0.15) choices = ['Cookie Storm Drop'];
+		if (roll[3+rolls] < 0.0001) choices.push('Free Sugar Lump');
+		return choose(choices, roll[4+rolls]);;
+	} else {
+		let rolls = 2
+		if (season == true) {
+			rolls = 3
+		}
+		var choices = [];
+		choices.push('Clot', 'Ruin');
+		if (roll[0+rolls] < 0.1) choices.push('Cursed Finger', 'Elder Frenzy');
+		if (roll[1+rolls] < 0.003) choices.push('Free Sugar Lump');
+		if (roll[2+rolls] < 0.1) choices = ['Blab'];
+		return choose(choices, roll[3+rolls]);;
 	}
+}
 const seed = "aaaaa"
 let spellsCasted = 0;
 
@@ -456,133 +454,229 @@ let spells = ['cbg', 'fthof', 'st', 'se', 'hc', 'scp', 'ra', 'di']
 let outcomes = []
 let rolls = []
 for (let i = 0; i < 30; i++) {
-Math.seedrandom(seed + '/' + spellsCasted);
-spellsCasted++;
-let roll = [Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random()];
-rolls.push(roll[0]);
-let cookie1 = check_cookies(false, true, false, roll);
-let cookie2 = check_cookies(true, true, false, roll);
-let cookie3 = check_cookies(true, false, false, roll);
-let cookie4 = check_cookies(true, false, false, roll);
-let cookie5 = check_cookies(false, true, true, roll);
-let cookie6 = check_cookies(true, true, true, roll);
-let gfd = getGfd(spells, roll);
-outcomes.push([cookie1, cookie2, cookie3, cookie4, cookie5, cookie6, gfd]);
+	Math.seedrandom(seed + '/' + spellsCasted);
+	spellsCasted++;
+	let roll = [Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random()];
+	rolls.push(roll[0]);
+	let cookie1 = check_cookies(false, true, false, roll);
+	let cookie2 = check_cookies(true, true, false, roll);
+	let cookie3 = check_cookies(true, false, false, roll);
+	let cookie4 = check_cookies(true, false, false, roll);
+	let cookie5 = check_cookies(false, true, true, roll);
+	let cookie6 = check_cookies(true, true, true, roll);
+	outcomes.push([cookie1, cookie2, cookie3, cookie4, cookie5, cookie6, roll]);
 }
 // make arrays for g!fthofs, bses, efs, and cfs in the range of casts
-let gfthofs = []
+// let gfthofs = []
 let bses = []
 let dfbses = []
 let efs = []
 let cfs = []
+let spellInfo = []
 for (let i = 0; i < 30; i++) {
-	if (outcomes[i][4] == 'fthof') {
-		gfthofs.push(i);
-	}
-}
-for (let i = 0; i < 30; i++) {
-	if (outcomes[i][2] == 'Elder Frenzy' || outcomes[i][3] == 'Elder Frenzy') {
-		efs.push(i);
-	}
-}
-for (let i = 0; i < 30; i++) {
-	if (outcomes[i][0] == 'Building Special' || outcomes[i][1] == 'Building Special') {
-		bses.push(i);
-	}
-}
-for (let i = 0; i < 30; i++) {
-	if ((outcomes[i][4] == 'Building Special' || outcomes[i][5] == 'Building Special' ) && !bses.includes(i)) {
-		dfbses.push(i);
-	}
+	if (outcomes[i][2] == 'Elder Frenzy' || outcomes[i][3] == 'Elder Frenzy') 			 efs.push(i);
+	if ((outcomes[i][0] == 'Building Special' || outcomes[i][1] == 'Building Special'))  bses.push(i);
+	if ((outcomes[i][4] == 'Building Special' || outcomes[i][5] == 'Building Special' ) && bses.includes(i)) dfbses.push(i);
+	if (outcomes[i][0] == 'Click Frenzy' || outcomes[i][1] == 'Click Frenzy') 			 cfs.push(i);
+	spellInfo.push({
+		roll  : outcomes[i][6],
+		ef    : outcomes[i][2] == "Elder Frenzy" || outcomes[i][3] == "Elder Frenzy",
+		bs    : outcomes[i][0] == "Building Special" || outcomes[i][1] == "Building Special",
+		dfbs  : outcomes[i][4] == "Building Special" || outcomes[i][5] == "Building Special",
+		cf    : outcomes[i][0] == "Click Frenzy" || outcomes[i][1] == "Click Frenzy"
+	});
 }
 
-for (let i = 0; i < 30; i++) {
-	if (outcomes[i][0] == 'Click Frenzy' || outcomes[i][1] == 'Click Frenzy') {
-		cfs.push(i);
-	}
-}
-
-
-// get possible offset abuses
-// offsets array is: offset start, offset end, number of g!fthofs, offset length, [initoffsetcost, manaafteroffset] (minimises initmana), [initoffsetcost, manaafteroffset] (maximises finalmana)
-let offsets = []
-for (const i of bses) {
-	if (rolls[i-1] < 0.5){
-		let gfthofnum = 0
-		let convertedgfthofs = []
-		for (let j=1; j <= 2; j++) {
-		if (rolls[i-j] < 2/7 && rolls[i-j] > 2/8) {
-			convertedgfthofs.push(i-j)
-		}
-	}
-	for (let j = i - 1; j >= i - 7; j--) {
-			if (gfthofs.includes(j) || convertedgfthofs.includes(j)) {
-				gfthofnum++;
-				// basic thing to weed out bad offsets in the second condition, improvable but quite a bit of effort would be needed
-				if (gfthofnum >= 2 && j-i-gfthofnum <= gfthofnum) {
-				offsets.push([i-1, j, gfthofnum, i-j]);
-				offsets.push(getOffsetCost(offsets[offsets.length-1]));
-			}
-			}
-	}
-}
-}
-// offsets that require df
-let dfoffsets = []
-for (const i of dfbses) {
-	if (rolls[i-1] < 0.5){
-		let gfthofnum = 0
-		let convertedgfthofs = []
-		for (let j=1; j <= 2; j++) {
-		if (rolls[i-j] < 2/7 && rolls[i-j] > 2/8) {
-			convertedgfthofs.push(i-j)
-		}
-	}
-	for (let j = i - 1; j >= i - 7; j--) {
-			if (gfthofs.includes(j) || convertedgfthofs.includes(j)) {
-				gfthofnum++;
-				if (gfthofnum >= 2 && j-i-gfthofnum <= gfthofnum) {
-				dfoffsets.push([i-1, j, gfthofnum, i-j]);
-				dfoffsets.push(getOffsetCost(dfoffsets[dfoffsets.length-1]));
-			}
-			}
-	}
-}
-}
-
-
-
-// autorouting algorithm
-// ok im like prepared to lose my mind now yeah
-
-let state = {
-	step: 0,
-	df: 0,
+let stateRows = [[{
 	mana: 150,
-	backfireNum: 0,
-	offset: 0,
-	dfoffset: 0,
-	gfthof: 0,
+	spellsCasted: 0,
+	df: false,
+	ef: false,
+	cf: false,
 	bs: 0,
-	dfbs: 0,
-	cf: 0,
-	ef: 0,
-	gbs: 0,
-	gdfbs: 0,
-	gcf: 0,
-	gef: 0,
-	buffs: 0,
-	efbuff: 0,
+	lumpsLeft: 2
+}]]
+
+for (let i = 0; i < 30; i++) {
+	let newRow = []
+	for (const state of stateRows[i]) {
+		// g!fthof
+		if ((spellInfo[i + 1].ef && !state.ef) || spellInfo[i + 1].bs || (spellInfo[i + 1].cf && !state.cf)) {
+			let gfthofState = {
+				mana: Math.floor(state.mana - getSpellCost(8, 2, state.mana, false)),
+				spellsCasted: state.spellsCasted + 1,
+				df: state.df,
+				ef: state.ef,
+				cf: state.cf,
+				bs: state.bs,
+				lumpsLeft: state.lumpsLeft
+			};
+
+			if (getGfd(getSpellPool(state.mana, state.mana), spellInfo[i].roll) == "fthof") {
+				if (spellInfo[i + 1].ef) gfthofState.ef = true;
+				if (spellInfo[i + 1].bs) gfthofState.bs += 1;
+				if (spellInfo[i + 1].cf) gfthofState.cf = true;
+				newRow.push(gfthofState);
+			} else {
+				let refilledGfthofState = {
+					mana: Math.min(150, Math.floor(state.mana) + 100),
+					spellsCasted: state.spellsCasted + 1,
+					df: state.df,
+					ef: state.ef,
+					cf: state.cf,
+					bs: state.bs,
+					lumpsLeft: state.lumpsLeft - 1
+				};
+
+				if (getGfd(getSpellPool(refilledGfthofState.mana, refilledGfthofState.mana), spellInfo[i].roll) == "fthof") {
+					refilledGfthofState.mana -= getSpellCost(8, 2, state.mana, false);
+					if (spellInfo[i + 1].ef) refilledGfthofState.ef = true;
+					if (spellInfo[i + 1].bs) refilledGfthofState.bs += 1;
+					if (spellInfo[i + 1].cf) refilledGfthofState.cf = true;
+					newRow.push(refilledGfthofState);
+				}
+			}
+		}
+
+		// fthof
+		if (spellInfo[i].ef && !state.ef || spellInfo[i].cf && !state.cf || spellInfo[i].bs) {
+
+			if (getSpellCost(8, 0, state.mana, true) <= state.mana) {
+				newRow.push({
+					mana: Math.floor(state.mana - getSpellCost(8, 0, state.mana, true)),
+					spellsCasted: state.spellsCasted + 1,
+					df: state.df,
+					ef: state.ef,
+					cf: state.cf,
+					bs: state.bs,
+					lumpsLeft: state.lumpsLeft
+				});
+			} else {
+				newRow.push({
+					mana: Math.min(150, Math.floor(state.mana) + 100) - getSpellCost(8, 0, Math.floor(state.mana) + 100, true),
+					spellsCasted: state.spellsCasted + 1,
+					df: state.df,
+					ef: state.ef || spellInfo[i].ef,
+					cf: state.cf || spellInfo[i].cf,
+					bs: state.bs + (spellInfo[i].bs ? 1 : 0),
+					lumpsLeft: state.lumpsLeft - 1
+				})
+			}
+		}
+		
+		// skip
+		let skipCost = getSkipCost(state.mana, spellInfo[i].roll[0], spellInfo[i].roll[1], false, false);
+		if (skipCost <= state.mana) {
+			newRow.push({
+				mana: Math.floor(state.mana - skipCost),
+				spellsCasted: state.spellsCasted + 1,
+				df: state.df,
+				ef: state.ef,
+				cf: state.cf,
+				lumpsLeft: state.lumpsLeft
+			});
+		} else {
+			let refilledSkipState = {
+				mana: Math.min(150, Math.floor(state.mana) + 100),
+				spellsCasted: state.spellsCasted + 1,
+				df: state.df,
+				ef: state.ef,
+				cf: state.cf,
+				lumpsLeft: state.lumpsLeft
+			};
+			if (getSkipCost(refilledSkipState.mana, spellInfo[i].roll[0], spellInfo[i].roll[1], false, false) <= refilledSkipState.mana) {
+				refilledSkipState.mana -= getSkipCost(refilledSkipState.mana, spellInfo[i].roll[0], spellInfo[i].roll[1], false, false);
+				newRow.push(refilledSkipState);
+			}
+		}
+
+		// offset
+		
+	}
 }
-function updateState(state, step){
-	state.step += 1
-	state.backfireNum = rolls[i]
-	state.offset = offsets.includes(step) ? true : false
-	state.dfoffset = dfoffsets.includes(step) ? true : false
-	state.gfthof = gfthof.includes(step) ? true : false
-	state.bs = bses.includes(step) ? true : false
-	state.dfbs = dfbses.includes(step) ? true : false
-	state.cf = cfs.includes(step) ? true : false
-	state.ef = efs.includes(step) ? true : false
-	state.ef = efs.includes(step) ? true : false
-}
+
+
+
+// // get possible offset abuses
+// // offsets array is: offset start, offset end, number of g!fthofs, offset length, [initoffsetcost, manaafteroffset] (minimises initmana), [initoffsetcost, manaafteroffset] (maximises finalmana)
+// let offsets = []
+// for (const i of bses) {
+// 	if (rolls[i-1] < 0.5){
+// 		let gfthofnum = 0
+// 		let convertedgfthofs = []
+// 		for (let j=1; j <= 2; j++) {
+// 		if (rolls[i-j] < 2/7 && rolls[i-j] > 2/8) {
+// 			convertedgfthofs.push(i-j)
+// 		}
+// 	}
+// 	for (let j = i - 1; j >= i - 7; j--) {
+// 			if (gfthofs.includes(j) || convertedgfthofs.includes(j)) {
+// 				gfthofnum++;
+// 				// basic thing to weed out bad offsets in the second condition, improvable but quite a bit of effort would be needed
+// 				if (gfthofnum >= 2 && j-i-gfthofnum <= gfthofnum) {
+// 				offsets.push([i-1, j, gfthofnum, i-j]);
+// 				offsets.push(getOffsetCost(offsets[offsets.length-1]));
+// 			}
+// 			}
+// 	}
+// }
+// }
+// // offsets that require df
+// let dfoffsets = []
+// for (const i of dfbses) {
+// 	if (rolls[i-1] < 0.5){
+// 		let gfthofnum = 0
+// 		let convertedgfthofs = []
+// 		for (let j=1; j <= 2; j++) {
+// 		if (rolls[i-j] < 2/7 && rolls[i-j] > 2/8) {
+// 			convertedgfthofs.push(i-j)
+// 		}
+// 	}
+// 	for (let j = i - 1; j >= i - 7; j--) {
+// 			if (gfthofs.includes(j) || convertedgfthofs.includes(j)) {
+// 				gfthofnum++;
+// 				if (gfthofnum >= 2 && j-i-gfthofnum <= gfthofnum) {
+// 				dfoffsets.push([i-1, j, gfthofnum, i-j]);
+// 				dfoffsets.push(getOffsetCost(dfoffsets[dfoffsets.length-1]));
+// 			}
+// 			}
+// 	}
+// }
+// }
+
+
+
+// // autorouting algorithm
+// // ok im like prepared to lose my mind now yeah
+
+// let state = {
+// 	step: 0,
+// 	df: 0,
+// 	mana: 150,
+// 	backfireNum: 0,
+// 	offset: 0,
+// 	dfoffset: 0,
+// 	gfthof: 0,
+// 	bs: 0,
+// 	dfbs: 0,
+// 	cf: 0,
+// 	ef: 0,
+// 	gbs: 0,
+// 	gdfbs: 0,
+// 	gcf: 0,
+// 	gef: 0,
+// 	buffs: 0,
+// 	efbuff: 0,
+// }
+// function updateState(state, step){
+// 	state.step += 1
+// 	state.backfireNum = rolls[i]
+// 	state.offset = offsets.includes(step) ? true : false
+// 	state.dfoffset = dfoffsets.includes(step) ? true : false
+// 	state.gfthof = gfthof.includes(step) ? true : false
+// 	state.bs = bses.includes(step) ? true : false
+// 	state.dfbs = dfbses.includes(step) ? true : false
+// 	state.cf = cfs.includes(step) ? true : false
+// 	state.ef = efs.includes(step) ? true : false
+// 	state.ef = efs.includes(step) ? true : false
+// }
