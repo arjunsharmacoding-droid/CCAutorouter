@@ -484,7 +484,7 @@ for (let i = 0; i < 30; i++) {
 		roll  : outcomes[i][6][0],
 		ef    : outcomes[i][2] == "Elder Frenzy" || outcomes[i][3] == "Elder Frenzy",
 		bs    : outcomes[i][0] == "Building Special" || outcomes[i][1] == "Building Special",
-		dfbs  : outcomes[i][4] == "Building Special" || outcomes[i][5] == "Building Special",
+		dfbs  : (outcomes[i][4] == "Building Special" || outcomes[i][5] == "Building Special") && !bses.includes(i),
 		cf    : outcomes[i][0] == "Click Frenzy" || outcomes[i][1] == "Click Frenzy"
 	});
 	if (spellInfo.roll > 2/8 && spellInfo.roll < 3/8){
@@ -508,7 +508,7 @@ for (let i = 0; i < 30; i++) {
  				// basic thing to weed out bad offsets in the second condition, improvable but quite a bit of effort would be needed
  				if (gfthofnum >= 2 && j-i-gfthofnum <= gfthofnum) {
  				offsets.push([i-1, j, gfthofnum, i-j]);
- 				offsets.push(getOffsetCost(offsets[offsets.length-1]));
+ 				offsets[offsets.length-1].push(getOffsetCost(offsets[offsets.length-1]));
  			}
  			}
  	}
@@ -519,7 +519,6 @@ for (let i = 0; i < 30; i++) {
  for (const i of dfbses) {
  	if (rolls[i-1] < 0.5){
  		let gfthofnum = 0
- 		let convertedgfthofs = []
  		for (let j=1; j <= 2; j++) {
  		if (rolls[i-j] < 2/7 && rolls[i-j] > 2/8) {
  			convertedgfthofs.push(i-j)
@@ -530,12 +529,46 @@ for (let i = 0; i < 30; i++) {
  				gfthofnum++;
  				if (gfthofnum >= 2 && j-i-gfthofnum <= gfthofnum) {
  				dfoffsets.push([i-1, j, gfthofnum, i-j]);
- 				dfoffsets.push(getOffsetCost(dfoffsets[dfoffsets.length-1]));
+ 				dfoffsets[dfoffsets.length-1].push(getOffsetCost(dfoffsets[dfoffsets.length-1]));
  			}
  			}
  	}
  }
  }
+
+// offsets which do not require refilling mid offset, and only 1 g!fthof because multiple efs/cfs are useless
+// ending gfd, first gfd, number of gfds in offset
+let offsetCf = []
+let offsetEf = []
+for (const i of cfs){
+	if (rolls[i-1] < 0.5) {
+		for (let j=i-1; j >= i-7; j--){
+			if (cfs.includes(j)){
+				offsetCf.push(offsetCf.push([i-1, j, i-j]))
+				break
+			}
+		}
+	}
+}
+for (const i of efs){
+	if (rolls[i-1] > 0.5) {
+		for (let j=i-1; j >= i-7; j--){
+			if ((rolls[j] >= 2/8 && rolls[j] < 3/8) || j > 7/8) {
+				break
+				}
+			if (cfs.includes(j)){
+				offsetEf.push(offsetEf.push([i-1, j, i-j]))
+				break
+			
+		}
+		}
+	}
+}
+
+
+
+
+
 
 let stateRows = [[{
 	mana: 150,
@@ -635,11 +668,10 @@ for (let i = 0; i < 30; i++) {
 				lumpsLeft: state.lumpsLeft
 			};
 			if (getSkipCost(refilledSkipState.mana, spellInfo[i].roll[0], spellInfo[i+1].roll[0], false, false) <= refilledSkipState.mana) {
-				refilledSkipState.mana -= getSkipCost(refilledSkipState.mana, spellInfo[i].roll[0], spellInfo[i+1].roll[0], false, false);
+				refilledSkipState.mana -= getSkipCost(refilledSkipState.mana, spellInfo[i].roll[0], spellInfo[i].roll[1], false, false);
 				newRow.push(refilledSkipState);
 			}
 		}
 
 	}
 }
-
