@@ -476,7 +476,7 @@ let spellInfo = []
 for (let i = 0; i < 30; i++) {
 	if (outcomes[i][2] == 'Elder Frenzy' || outcomes[i][3] == 'Elder Frenzy') 			 efs.push(i);
 	if ((outcomes[i][0] == 'Building Special' || outcomes[i][1] == 'Building Special'))  bses.push(i);
-	if ((outcomes[i][4] == 'Building Special' || outcomes[i][5] == 'Building Special' ) && bses.includes(i)) dfbses.push(i);
+	if ((outcomes[i][4] == 'Building Special' || outcomes[i][5] == 'Building Special' ) && !bses.includes(i)) dfbses.push(i);
 	if (outcomes[i][0] == 'Click Frenzy' || outcomes[i][1] == 'Click Frenzy') 			 cfs.push(i);
 	spellInfo.push({
 		roll  : outcomes[i][6],
