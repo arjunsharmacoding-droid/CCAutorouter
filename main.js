@@ -486,12 +486,12 @@ for (let i = 0; i < 30; i++) {
 	}
 }
 for (let i = 0; i < 30; i++) {
-	if ((outcomes[i][0] == 'Building Special' || outcomes[i][1] == 'Building Special')) {
+	if (outcomes[i][0] == 'Building Special' || outcomes[i][1] == 'Building Special') {
 		bses.push(i);
 	}
 }
 for (let i = 0; i < 30; i++) {
-	if ((outcomes[i][4] == 'Building Special' || outcomes[i][5] == 'Building Special' )) {
+	if ((outcomes[i][4] == 'Building Special' || outcomes[i][5] == 'Building Special' ) && !bses.includes(i)) {
 		dfbses.push(i);
 	}
 }
