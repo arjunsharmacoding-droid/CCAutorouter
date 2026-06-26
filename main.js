@@ -392,10 +392,8 @@ function getOffsetCost(offset) {
 		let maxFinalMana = [initialCost, -Infinity]
 	for (let i=initialCost; i <= 66; i++) {
 		let finalMana = 100+i
-		let mana = i
 		for (let j=0; j<offsetLength; j++) {
-		finalMana -= getSpellCost(8, choose(getSpellPool(i), rolls[offset[0]-j]), i, true);
-		mana -= getSpellCost(8, choose(getSpellPool(mana, i), rolls[offset[0]-j]), i, true);
+		finalMana -= getSpellCost(8, choose(getSpellPool(i, i), rolls[offset[0]-j]), i, true);
 		}
 		if (finalMana > maxFinalMana[1]) {
 			maxFinalMana = [i, finalMana]
@@ -413,7 +411,7 @@ function choose(arr, roll) {
 }
 
 function getGfd(spells, roll) {
-	return spells[Math.floor(roll[0] * spells.length)];
+	return spells[Math.floor(roll * spells.length)];
 }
 
 function check_cookies(season, success, dragonflight, roll) {
@@ -469,7 +467,6 @@ for (let i = 0; i < 30; i++) {
 // make arrays for g!fthofs, bses, efs, and cfs in the range of casts
 let gfthofs = []
 let convertedgfthofs = []
-let rolls = []
 let bses = []
 let dfbses = []
 let efs = []
@@ -487,10 +484,10 @@ for (let i = 0; i < 30; i++) {
 		dfbs  : (outcomes[i][4] == "Building Special" || outcomes[i][5] == "Building Special") && !bses.includes(i),
 		cf    : outcomes[i][0] == "Click Frenzy" || outcomes[i][1] == "Click Frenzy"
 	});
-	if (spellInfo.roll > 2/8 && spellInfo.roll < 3/8){
+	if (spellInfo[i].roll > 2/8 && spellInfo[i].roll < 3/8){
 		gfthofs.push(i)
 	}
-	if (spellInfo.roll > 2/7 && spellInfo.roll < 3/7){
+	if (spellInfo[i].roll > 2/7 && spellInfo[i].roll < 3/7){
 		convertedgfthofs.push(i)
 	}
 }
@@ -544,7 +541,7 @@ for (const i of cfs){
 	if (rolls[i-1] < 0.5) {
 		for (let j=i-1; j >= i-7; j--){
 			if (cfs.includes(j)){
-				offsetCf.push(offsetCf.push([i-1, j, i-j]))
+				offsetCf.push([i-1, j, i-j])
 				break
 			}
 		}
@@ -553,11 +550,11 @@ for (const i of cfs){
 for (const i of efs){
 	if (rolls[i-1] > 0.5) {
 		for (let j=i-1; j >= i-7; j--){
-			if ((rolls[j] >= 2/8 && rolls[j] < 3/8) || j > 7/8) {
+			if ((rolls[j] >= 2/8 && rolls[j] < 3/8) || rolls[j] > 7/8) {
 				break
 				}
 			if (cfs.includes(j)){
-				offsetEf.push(offsetEf.push([i-1, j, i-j]))
+				offsetEf.push([i-1, j, i-j])
 				break
 			
 		}
@@ -611,7 +608,7 @@ for (let i = 0; i < 30; i++) {
 					lumpsLeft: state.lumpsLeft - 1
 				};
 
-				if (getGfd(getSpellPool(refilledGfthofState.mana, refilledGfthofState.mana), spellInfo[i].roll) == "2") {
+				if (getGfd(getSpellPool(refilledGfthofState.mana, refilledGfthofState.mana), spellInfo[i].roll) == 2) {
 					refilledGfthofState.mana -= getSpellCost(8, 2, state.mana, false);
 					if (spellInfo[i + 1].ef) refilledGfthofState.ef = true;
 					if (spellInfo[i + 1].bs) refilledGfthofState.bs += 1;
@@ -648,7 +645,7 @@ for (let i = 0; i < 30; i++) {
 		}
 		
 		// skip
-		let skipCost = getSkipCost(state.mana, spellInfo[i].roll[0], spellInfo[i+1].roll[0], false, false);
+		let skipCost = getSkipCost(state.mana, spellInfo[i].roll, spellInfo[i+1].roll, false, false);
 		if (skipCost <= state.mana) {
 			newRow.push({
 				mana: Math.floor(state.mana - skipCost),
@@ -667,8 +664,8 @@ for (let i = 0; i < 30; i++) {
 				cf: state.cf,
 				lumpsLeft: state.lumpsLeft
 			};
-			if (getSkipCost(refilledSkipState.mana, spellInfo[i].roll[0], spellInfo[i+1].roll[0], false, false) <= refilledSkipState.mana) {
-				refilledSkipState.mana -= getSkipCost(refilledSkipState.mana, spellInfo[i].roll[0], spellInfo[i+1].roll[0], false, false);
+			if (getSkipCost(refilledSkipState.mana, spellInfo[i].roll, spellInfo[i+1].roll, false, false) <= refilledSkipState.mana) {
+				refilledSkipState.mana -= getSkipCost(refilledSkipState.mana, spellInfo[i].roll, spellInfo[i+1].roll, false, false);
 				newRow.push(refilledSkipState);
 			}
 		}
