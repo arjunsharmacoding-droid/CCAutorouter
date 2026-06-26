@@ -611,7 +611,7 @@ for (let i = 0; i < 30; i++) {
 					lumpsLeft: state.lumpsLeft - 1
 				};
 
-				if (getGfd(getSpellPool(refilledGfthofState.mana, refilledGfthofState.mana), spellInfo[i].roll) == "fthof") {
+				if (getGfd(getSpellPool(refilledGfthofState.mana, refilledGfthofState.mana), spellInfo[i].roll) == "2") {
 					refilledGfthofState.mana -= getSpellCost(8, 2, state.mana, false);
 					if (spellInfo[i + 1].ef) refilledGfthofState.ef = true;
 					if (spellInfo[i + 1].bs) refilledGfthofState.bs += 1;
@@ -648,7 +648,7 @@ for (let i = 0; i < 30; i++) {
 		}
 		
 		// skip
-		let skipCost = getSkipCost(state.mana, spellInfo[i].roll[0], spellInfo[i].roll[1], false, false);
+		let skipCost = getSkipCost(state.mana, spellInfo[i].roll[0], spellInfo[i+1].roll[0], false, false);
 		if (skipCost <= state.mana) {
 			newRow.push({
 				mana: Math.floor(state.mana - skipCost),
@@ -668,7 +668,7 @@ for (let i = 0; i < 30; i++) {
 				lumpsLeft: state.lumpsLeft
 			};
 			if (getSkipCost(refilledSkipState.mana, spellInfo[i].roll[0], spellInfo[i+1].roll[0], false, false) <= refilledSkipState.mana) {
-				refilledSkipState.mana -= getSkipCost(refilledSkipState.mana, spellInfo[i].roll[0], spellInfo[i].roll[1], false, false);
+				refilledSkipState.mana -= getSkipCost(refilledSkipState.mana, spellInfo[i].roll[0], spellInfo[i+1].roll[0], false, false);
 				newRow.push(refilledSkipState);
 			}
 		}
