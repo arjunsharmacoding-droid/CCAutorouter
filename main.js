@@ -1,4 +1,4 @@
-
+// seedrandom function
 (function (a, b, c, d, e, f) {
 	function k(a) {
 		var b, c = a.length, e = this, f = 0, g = e.i = e.j = 0, h = e.S = [];
@@ -47,7 +47,12 @@
 	}, m(c.random(), b)
 })(this, [], Math, 256, 6, 52);
 
+
+
 function getSpellCost(spell, gspell, mana, success){
+	// spell being casted, spell being casted through gfd (if N/A then input should be 0), max mana when casting spell, whether the spell succeeds (only useful for g!se success)
+
+	// [base, % of max mana]
 	const cbg = [2, 40/100]
 	const fthof = [10, 60/100]
 	const st = [8, 20/100]
@@ -65,9 +70,11 @@ function getSpellCost(spell, gspell, mana, success){
 	let spells = [cbg, fthof, st, se, hc, scp, ra, di, gfd]
 	let gspells = [[0, 0], cbg, fthof, st, se, hc, scp, ra, di]
 
+	// floor((first spell base + mana * first spell % of max mana) * sirbmult) + floor(same thing but its the gspell)/2
 	return Math.floor((spells[spell][0]+mana*spells[spell][1])*0.89)+Math.floor((gspells[gspell][0]+mana*gspells[gspell][1])*0.89)/2
 }
-
+0
+// outputs an array of spells gfd can cast with the current and max mana being used, where spells have an id: cbg = 1, fthof = 2, etc, di = 8
 function getSpellPool(curmana, maxmana){
 	let out = []
 	for (let i = 1; i <= 8; i++) {
@@ -77,9 +84,9 @@ function getSpellPool(curmana, maxmana){
 	}
 	return out;
 }
-
+// current mana, randomseed of this row, randomseed of next row, whether gfds is possible, and di is whether di success would mess with the combo or not (true means that it wouldnt)
+// this shit is a fucking MESS bro like do not read for your sanity but i do think its probably correct tm
 function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
-	// for di: 0 = dont get di, 1 = get di success (if you would need di backfire youd cast without this function)
 	if (randomSeed2 > 0.5){
 		randomSeed2 = false
 	} else {
@@ -179,21 +186,47 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 					return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true) )
 				}
 			}
-		if (mana >= 20 && mana <= 21.5){
+		if (mana >= 20 && mana <= 20.5){
 			if (randomSeed > 2/4 && randomSeed < 7/8){
 				return 0
 		}
 			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
 				return 0
 			}
-				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8)){
-				return getSpellCost(0, 0, mana, true) // dont cast g!di if it messes with things
+				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8) || (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8)){
+					if (di && randomSeed < 0.835){
+						return getSpellCost(7, 0, mana, true)
+					} else {
+					return getSpellCost(0, 0, mana, true)
+					}
 				}
-				if (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) {
-					return getSpellCost(0, 0, mana, true) // dont cast g!st backfire
-				} else {
-					return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true) )
+					if (di && randomSeed < 0.835){
+					return Math.min(getSpellCost(7, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+					} else {
+						return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+					}
+				
+	}
+		if (mana >= 21 && mana <= 21.5){
+			if (randomSeed > 2/4 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8) || (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8)){
+					if (di && randomSeed < 0.835){
+						return getSpellCost(7, 0, mana, true)
+					} else {
+					return getSpellCost(0, 0, mana, true)
+					}
 				}
+					if (di && randomSeed < 0.835){
+					return Math.min(getSpellCost(7, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+					} else {
+						return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+					}
+				
 	}
 		if (mana >= 22 && mana <= 28){
 			if (randomSeed > 1/3 && randomSeed < 7/8){
@@ -208,8 +241,258 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 				if (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) {
 					return getSpellCost(0, 0, mana, true) // dont cast g!st backfire
 				} else {
-					return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true) )
+					if (di && randomSeed < 0.835){
+					return Math.min(getSpellCost(7, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+					} else {
+						return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+					}
 				}
+	}
+		if (mana >= 28.5 && mana <= 29){
+			if (randomSeed > 2/4 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 1/3 && randomSeed < 2/4){
+				return mana-28 // sell down to 28 current mana and do conversion from previous case, this will also be happening in the other if statements from here onwards
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8)){
+				return getSpellCost(0, 0, mana, true) // dont cast g!di if it messes with things
+				}
+				if (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) {
+					return getSpellCost(0, 0, mana, true) // dont cast g!st backfire
+				} else {
+					if (di && randomSeed < 0.835){
+					return Math.min(getSpellCost(7, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+					} else {
+						return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+					}
+				}
+	}
+		if (mana >= 29.5 && mana <= 40){
+			if (randomSeed > 3/5 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+		let options = []
+		// cast di or cast cbg
+		if (di && randomSeed < 0.835){
+			options.push(getSpellCost(7,0,mana,true))
+		} else {
+			options.push(getSpellCost(0,0,mana,true))
+		}
+		// cast gfd or dont cast gfd because of g!st/g!di backfire
+		if ((!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) || ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8))){
+				options.push(getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+		}
+		// sell down to 29/29 then do the previous case's refund
+		if (randomSeed > 2/4 && randomSeed < 3/8) {
+			options.push(mana-29) 
+			}
+		
+			return Math.min(...options)
+					
+				
+	}
+		if (mana >= 40.5 && mana <= 42){
+			if (randomSeed > 2/3 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+		let options = []
+		// cast di or cast cbg
+		if (di && randomSeed < 0.835){
+			options.push(getSpellCost(7,0,mana,true))
+		} else {
+			options.push(getSpellCost(0,0,mana,true))
+		}
+		// cast gfd or dont cast gfd because of g!st/g!di backfire
+		if ((!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) || ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8))){
+				options.push(getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+		}
+		// sell down to 40/40 then do the previous case's refund
+		if (randomSeed > 3/5 && randomSeed < 2/3) {
+			options.push(mana-40) 
+			}
+		
+			return Math.min(...options)
+	}
+		if (mana >= 42.5 && mana <= 49){
+			if (randomSeed > 2/3 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+		let options = []
+		// cast di or cast hc (hc becomes cheaper than cbg at this point)
+		if (di && randomSeed < 0.835){
+			options.push(getSpellCost(7,0,mana,true))
+		} else {
+			options.push(getSpellCost(4,0,mana,true))
+		}
+		// cast gfd or dont cast gfd because of g!st/g!di backfire
+		if ((!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) || ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8))){
+				options.push(getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+		}
+		// sell down to 40/40 then do the previous case's refund
+		if (randomSeed > 3/5 && randomSeed < 2/3) {
+			options.push(mana-40) 
+			}
+		
+			return Math.min(...options)
+	}
+		if (mana >= 49.5 && mana <= 59){
+			if (randomSeed > 2/3 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+		let options = []
+		// cast hc
+		options.push(getSpellCost(4,0,mana,true))
+		// cast gfd or dont cast gfd because of g!st/g!di backfire
+		if ((!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) || ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8))){
+				options.push(getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+		}
+		// sell down to 40/40 then do the previous case's refund
+		if (randomSeed > 3/5 && randomSeed < 2/3) {
+			options.push(mana-40) 
+			}
+			return Math.min(...options)
+	}
+		if (mana >= 59.5 && mana <= 76){
+			if (randomSeed > 5/7 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+		let options = []
+		// cast hc
+		options.push(getSpellCost(4,0,mana,true))
+		// cast gfd or dont cast gfd because of g!st/g!di backfire
+		if ((!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) || ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8))){
+				options.push(getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+		}
+		// sell down to 59/59 then do the previous case's refund
+		if (randomSeed > 2/3 && randomSeed < 5/7) {
+			options.push(mana-40) 
+			}
+			return Math.min(...options)
+	}
+		if (mana >= 76.5){
+			if (randomSeed > 6/8 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+		let options = []
+		// cast hc
+		options.push(getSpellCost(4,0,mana,true))
+		// cast gfd or dont cast gfd because of g!st/g!di backfire
+		if ((!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) || ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8))){
+				options.push(getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+		}
+		// sell down to 76/76 then do the previous case's refund
+		if (randomSeed > 5/7 && randomSeed < 6/8) {
+			options.push(mana-40) 
+			}
+			return Math.min(...options)
+	}
+		} else {
+		if (mana < 3){
+			return undefined;
+		}
+
+		if (mana <= 11) {
+			// the last parameter only is relevant for se so in this function when se is not being casted the value of it wont be accurate necessarily
+			return getSpellCost(8, 0, mana, true);
+		}
+		if (mana === 12){
+			if (randomSeed > 5/7 && randomSeed < 6/7){
+				return 0;
+				} else {
+			return getSpellCost(8, 0, mana, true);
+				}
+		}
+		if (mana >= 12.5 && mana <= 14){
+			if (randomSeed > 4/6 && randomSeed < 6/7){
+				return 0
+			} else {
+			return getSpellCost(8, 0, mana, true);
+			}
+
+		}
+		if (mana >= 14.5 && mana <= 17){
+			if (randomSeed > 4/6 && randomSeed < 6/7){
+				return 0
+		}
+			return getSpellCost(8, 0, mana, true);
+	}
+		if (mana >= 17.5 && mana <= 18){
+			if (randomSeed > 3/5 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+			return getSpellCost(8, 0, mana, true);
+	}
+		if (mana == 18.5){
+			if (randomSeed > 3/5 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+			return getSpellCost(8, 0, mana, true);
+	}
+		if (mana >= 19 && mana <= 19.5){
+			if (randomSeed > 3/5 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+			return getSpellCost(8, 0, mana, true);
+			}
+		if (mana >= 20 && mana <= 20.5){
+			if (randomSeed > 2/4 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+			return getSpellCost(8, 0, mana, true);
+				
+	}
+		if (mana >= 21 && mana <= 21.5){
+			if (randomSeed > 2/4 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+			return getSpellCost(8, 0, mana, true);
+				
+	}
+		if (mana >= 22 && mana <= 28){
+			if (randomSeed > 1/3 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+			return getSpellCost(8, 0, mana, true);
 	}
 		if (mana >= 28.5 && mana <= 29){
 			if (randomSeed > 2/4 && randomSeed < 7/8){
@@ -218,14 +501,10 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
 				return 0
 			}
-				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8)){
-				return getSpellCost(0, 0, mana, true) // dont cast g!di if it messes with things
-				}
-				if (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) {
-					return getSpellCost(0, 0, mana, true) // dont cast g!st backfire
-				} else {
-					return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true) )
-				}
+			if (randomSeed > 1/3 && randomSeed < 2/4){
+				return mana-28 // sell down to 28 current mana and do conversion from previous case, this will also be happening in the other if statements from here onwards
+		}
+
 	}
 		if (mana >= 29.5 && mana <= 40){
 			if (randomSeed > 3/5 && randomSeed < 7/8){
@@ -234,31 +513,61 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
 				return 0
 			}
-				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8)){
-				return getSpellCost(0, 0, mana, true) // dont cast g!di if it messes with things
-				}
-				if (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) {
-					return getSpellCost(0, 0, mana, true) // dont cast g!st backfire
-				} else {
-					return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true) )
-				}
+		let options = []
+		// gfds
+			options.push(getSpellCost(8, 0, mana, true));
+		// sell down to 29/29 then do the previous case's refund
+		if (randomSeed > 2/4 && randomSeed < 3/8) {
+			options.push(mana-29) 
+			}
+			return Math.min(...options)
+					
+				
 	}
-		if (mana >= 40.5 && mana <= 59){
+		if (mana >= 40.5 && mana <= 42){
 			if (randomSeed > 2/3 && randomSeed < 7/8){
 				return 0
 		}
 			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
 				return 0
 			}
-				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8)){
-				return getSpellCost(0, 0, mana, true) // dont cast g!di if it messes with things
-				}
-				if (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) {
-					return getSpellCost(0, 0, mana, true) // dont cast g!st backfire
-				} else {
-					return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true) )
-				}
+		let options = []
+		// gfds
+			options.push(getSpellCost(8, 0, mana, true));
+		// sell down to 40/40 then do the previous case's refund
+		if (randomSeed > 3/5 && randomSeed < 2/3) {
+			options.push(mana-40) 
+			}
+		
+			return Math.min(...options)
 	}
+		if (mana >= 42.5 && mana <= 49){
+			if (randomSeed > 2/3 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+		let options = []
+		// gfds
+			options.push(getSpellCost(8, 0, mana, true));
+		// sell down to 40/40 then do the previous case's refund
+		if (randomSeed > 3/5 && randomSeed < 2/3) {
+			options.push(mana-40) 
+			}
+		
+			return Math.min(...options)
+	}
+		if (mana >= 49.5 && mana <= 59){
+			if (randomSeed > 2/3 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+		let options = []
+		// gfds
+			options.push(getSpellCost(8, 0, mana, true));
 		if (mana >= 59.5 && mana <= 76){
 			if (randomSeed > 5/7 && randomSeed < 7/8){
 				return 0
@@ -266,14 +575,15 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
 				return 0
 			}
-				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8)){
-				return getSpellCost(0, 0, mana, true) // dont cast g!di if it messes with things
-				}
-				if (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) {
-					return getSpellCost(0, 0, mana, true) // dont cast g!st backfire
-				} else {
-					return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true) )
-				}
+		let options = []
+		// gfds
+			options.push(getSpellCost(8, 0, mana, true));
+		// sell down to 59/59 then do the previous case's refund
+
+		if (randomSeed > 2/3 && randomSeed < 5/7) {
+			options.push(mana-40) 
+			}
+			return Math.min(...options)
 	}
 		if (mana >= 76.5){
 			if (randomSeed > 6/8 && randomSeed < 7/8){
@@ -282,107 +592,47 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
 				return 0
 			}
-				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8)){
-				return getSpellCost(0, 0, mana, true) // dont cast g!di if it messes with things
-				}
-				if (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) {
-					return getSpellCost(0, 0, mana, true) // dont cast g!st backfire
-				} else {
-					return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true) )
-				}
-	}
-		} else {
-		if (mana < 3){
-			return undefined
-		}
-		if (mana <= 28){
-			if (randomSeed > 1/3 && randomSeed < 7/8){
-				return 0
-		}
-			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
-				return 0
-			} else{
-			return getSpellCost(8,0,mana, true)
+		let options = []
+		// gfds
+			options.push(getSpellCost(8, 0, mana, true));
+		// sell down to 76/76 then do the previous case's refund
+		if (randomSeed > 5/7 && randomSeed < 6/8) {
+			options.push(mana-40) 
 			}
-	}
-		if (mana >= 28.5 && mana <= 29){
-			if (randomSeed > 1/2 && randomSeed < 7/8){
-				return 0
-		}
-			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
-				return 0
-			} else{
-			return getSpellCost(8,0,mana, true)
-			}
-	}
-		if (mana >= 29.5 && mana <= 40){
-			if (randomSeed > 3/5 && randomSeed < 7/8){
-				return 0
-		}
-			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
-				return 0
-			} else{
-			return getSpellCost(8,0,mana, true)
-			}
-	}
-		if (mana >= 40.5 && mana <= 59){
-			if (randomSeed > 2/3 && randomSeed < 7/8){
-				return 0
-		}
-			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
-				return 0
-			} else{
-			return getSpellCost(8,0,mana, true)
-			}
-	}
-		if (mana >= 59.5 && mana <= 76){
-			if (randomSeed > 5/7 && randomSeed < 7/8){
-				return 0
-		}
-			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
-				return 0
-			} else{
-			return getSpellCost(8,0,mana, true)
-			}
-	}
-		if (mana >= 76.5){
-			if (randomSeed > 6/8 && randomSeed < 7/8){
-				return 0
-		}
-			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
-				return 0
-			} else{
-			return getSpellCost(8,0,mana, true)
-			}
+			return Math.min(...options)
 	}
 		}
 	}
-
-
+}
+// returns the cost of an offset abuse
+// you probably could implement binary search to go through the mana counts faster, but optimising this isnt that important since its precomputed
 function getOffsetCost(offset) {
 		let out = []
 		let initialCost = 0
 		let offsetLength = offset[0]-offset[1]
 		let lastgfthof = 0;
-		let lastgse; // this refers to the last g!fthof which requires g!se in the pool, which may be none of them
+		let lastgse; // this refers to the last g!fthof which requires g!se in the pool, which may be none of them.
 		for (let j=offsetLength-1; j>=0; j--) {
 			if (gfthofs.includes(offset[0] - j)) {
 				// number of gfd casts before the last g!fthof in the offset
 				lastgfthof = offsetLength-j-1;
 			}
-			if (rolls[offset[0] - j] < 2/7 && rolls[offset[0] - j] > 2/8 && j < 2) {
+			if (rolls[offset[0] - j] < 2/7 && rolls[offset[0] - j] > 2/8) {
 				lastgse = offsetLength-j;
 			}
 		}
-
+			// this loop finds the minimum amount needed for the offset
 			for (let i=14; true; i++) {
 				if (getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 2, i, true) < i) {
 					if (lastgse == undefined){
-					initialCost = getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 2, i, true);
+						// if there is no last gse, take the number of gfd casts before the last fthof, minus one, plus the cost of 1 whole g!fthof (because gfd needs to select fthof)
+						// also this one whole g!fthof includes the initial cost of gfd, hence the -1
+					initialCost = getSpellCost(8, 0, i, true)*(lastgfthof-1)+getSpellCost(8, 2, i, true);
 					break
 } else { 
+				// more of the same but account for lastgse because it exists (we need the cost of a g!se instead of a g!fthof and what not). then take the higher of the two values for the initial cost
 				if (getSpellCost(8, 0, i, true)*lastgse+getSpellCost(8, 3, i, false) < i){
-					initialCost = Math.max(getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 2, i, true), getSpellCost(8, 0, i, true)*lastgse+getSpellCost(8, 3, i, false));
+					initialCost = Math.max(getSpellCost(8, 0, i, true)*(lastgfthof-1)+getSpellCost(8, 2, i, true), getSpellCost(8, 0, i, true)*(lastgse-1)+getSpellCost(8, 3, i, false));
 					break
 }
 	
@@ -390,6 +640,7 @@ function getOffsetCost(offset) {
 				}
 			}
 		let maxFinalMana = [initialCost, -Infinity]
+		// this loop finds the initial max magic number that maximises mana after refilling (can be the same as the lowest mana needed at times)
 	for (let i=initialCost; i <= 66; i++) {
 		let finalMana = 100+i
 		for (let j=0; j<offsetLength; j++) {
@@ -405,15 +656,18 @@ function getOffsetCost(offset) {
 out.push(maxFinalMana)
 return out
 }
-	
+
+// get random element from array
 function choose(arr, roll) {
 	return arr[Math.floor(roll * arr.length)];
 }
 
+// gfd outcome
 function getGfd(spells, roll) {
 	return spells[Math.floor(roll * spells.length)];
 }
 
+// fthof outcome
 function check_cookies(season, success, dragonflight, roll) {
 	let rolls = 2
 	if (success !== false) {
@@ -442,6 +696,7 @@ function check_cookies(season, success, dragonflight, roll) {
 		return choose(choices, roll[3+rolls]);;
 	}
 }
+// inputs
 const seed = "aaaaa"
 let spellsCasted = 0;
 
@@ -456,17 +711,17 @@ for (let i = 0; i < 30; i++) {
 	spellsCasted++;
 	let roll = [Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random()];
 	rolls.push(roll[0]);
-	let cookie1 = check_cookies(false, true, false, roll);
-	let cookie2 = check_cookies(true, true, false, roll);
-	let cookie3 = check_cookies(true, false, false, roll);
-	let cookie4 = check_cookies(true, false, false, roll);
-	let cookie5 = check_cookies(false, true, true, roll);
-	let cookie6 = check_cookies(true, true, true, roll);
+	let cookie1 = check_cookies(false, true, false, roll); // success no change
+	let cookie2 = check_cookies(true, true, false, roll); // success one change
+	let cookie3 = check_cookies(false, false, false, roll); // backfire no change 
+	let cookie4 = check_cookies(true, false, false, roll); // backfire one change
+	let cookie5 = check_cookies(false, true, true, roll); // success no change df
+	let cookie6 = check_cookies(true, true, true, roll); // success one change df
 	outcomes.push([cookie1, cookie2, cookie3, cookie4, cookie5, cookie6, roll]);
 }
 // make arrays for g!fthofs, bses, efs, and cfs in the range of casts
 let gfthofs = []
-let convertedgfthofs = []
+let convertedgfthofs = [] // g!fthofs that are only g!fthofs if se is removed
 let bses = []
 let dfbses = []
 let efs = []
