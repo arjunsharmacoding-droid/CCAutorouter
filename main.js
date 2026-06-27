@@ -48,20 +48,20 @@
 })(this, [], Math, 256, 6, 52);
 
 function getSpellCost(spell, gspell, mana, success){
-	const cbg = [2, 40]
-	const fthof = [10, 60]
-	const st = [8, 20]
+	const cbg = [2, 40/100]
+	const fthof = [10, 60/100]
+	const st = [8, 20/100]
 	let se;
 	if (success == true) {
 		se = [0, 0] // assumed to refund since youd have > 400 of all buildings
 	} else {
-		se = [20, 75]
+		se = [20, 75/100]
 	}
-	const hc = [10, 10]
-	const scp = [10, 20]
+	const hc = [10, 10/100]
+	const scp = [10, 20/100]
 	const ra = [0, 0] // assumed to refund since youd be outside of gpoc
-	const di = [5, 20]
-	const gfd = [3, 5]
+	const di = [5, 20/100]
+	const gfd = [3, 5/100]
 	let spells = [cbg, fthof, st, se, hc, scp, ra, di, gfd]
 	let gspells = [[0, 0], cbg, fthof, st, se, hc, scp, ra, di]
 
@@ -370,7 +370,7 @@ function getOffsetCost(offset) {
 				// number of gfd casts before the last g!fthof in the offset
 				lastgfthof = offsetLength-j-1;
 			}
-			if (rolls[offset[0] - j] < 2/7 && rolls[offset[0] - j] > 2/8) {
+			if (rolls[offset[0] - j] < 2/7 && rolls[offset[0] - j] > 2/8 && j < 2) {
 				lastgse = offsetLength-j;
 			}
 		}
@@ -487,7 +487,7 @@ for (let i = 0; i < 30; i++) {
 	if (spellInfo[i].roll > 2/8 && spellInfo[i].roll < 3/8){
 		gfthofs.push(i)
 	}
-	if (spellInfo[i].roll > 2/7 && spellInfo[i].roll < 3/7){
+	if (spellInfo[i].roll > 2/7 && spellInfo[i].roll < 2/8){
 		convertedgfthofs.push(i)
 	}
 }
@@ -500,7 +500,7 @@ for (let i = 0; i < 30; i++) {
  	if (rolls[i-1] < 0.5){
  		let gfthofnum = 0
  	for (let j = i - 1; j >= i - 7; j--) {
- 			if (gfthofs.includes(j) || convertedgfthofs.includes(j)) {
+ 			if (gfthofs.includes(j) || (convertedgfthofs.includes(j) && j <= i-2)) {
  				gfthofnum++;
  				// basic thing to weed out bad offsets in the second condition, improvable but quite a bit of effort would be needed
  				if (gfthofnum >= 2 && j-i-gfthofnum <= gfthofnum) {
