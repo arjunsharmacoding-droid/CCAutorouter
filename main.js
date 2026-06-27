@@ -617,7 +617,7 @@ function getOffsetCost(offset) {
 				// number of gfd casts before the last g!fthof in the offset
 				lastgfthof = offsetLength-j-1;
 			}
-			if (rolls[offset[0] - j] < 2/7 && rolls[offset[0] - j] > 2/8) {
+			if (rolls[offset[0] - j] < 1/7 && rolls[offset[0] - j] > 1/8) {
 				lastgse = offsetLength-j;
 			}
 		}
