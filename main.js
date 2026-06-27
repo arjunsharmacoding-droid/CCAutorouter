@@ -73,7 +73,7 @@ function getSpellCost(spell, gspell, mana, success){
 	// floor((first spell base + mana * first spell % of max mana) * sirbmult) + floor(same thing but its the gspell)/2
 	return Math.floor((spells[spell][0]+mana*spells[spell][1])*0.89)+Math.floor((gspells[gspell][0]+mana*gspells[gspell][1])*0.89)/2
 }
-0
+
 // outputs an array of spells gfd can cast with the current and max mana being used, where spells have an id: cbg = 1, fthof = 2, etc, di = 8
 function getSpellPool(curmana, maxmana){
 	let out = []
@@ -289,11 +289,13 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 		if ((!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) || ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8))){
 				options.push(getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
 		}
-		// sell down to 29/29 then do the previous case's refund
+		// sell down to 29/29 or 28/28 then do the previous case's refund
 		if (randomSeed > 2/4 && randomSeed < 3/8) {
 			options.push(mana-29) 
 			}
-		
+		if (randomSeed > 1/3 && randomSeed < 2/4) {
+			options.push(mana-28) 
+			}
 			return Math.min(...options)
 					
 				
@@ -520,6 +522,9 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 		if (randomSeed > 2/4 && randomSeed < 3/8) {
 			options.push(mana-29) 
 			}
+		if (randomSeed > 1/3 && randomSeed < 2/4) {
+			options.push(mana-28) 
+			}
 			return Math.min(...options)
 					
 				
@@ -617,7 +622,7 @@ function getOffsetCost(offset) {
 				// number of gfd casts before the last g!fthof in the offset
 				lastgfthof = offsetLength-j-1;
 			}
-			if (rolls[offset[0] - j] < 1/7 && rolls[offset[0] - j] > 1/8) {
+			if (rolls[offset[0] - j] < 2/7 && rolls[offset[0] - j] > 2/8) {
 				lastgse = offsetLength-j;
 			}
 		}
@@ -816,11 +821,6 @@ for (const i of efs){
 		}
 	}
 }
-
-
-
-
-
 
 let stateRows = [[{
 	mana: 150,
