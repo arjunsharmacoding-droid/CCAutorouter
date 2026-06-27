@@ -487,7 +487,7 @@ for (let i = 0; i < 30; i++) {
 	if (spellInfo[i].roll > 2/8 && spellInfo[i].roll < 3/8){
 		gfthofs.push(i)
 	}
-	if (spellInfo[i].roll > 2/7 && spellInfo[i].roll < 2/8){
+	if (spellInfo[i].roll < 2/7 && spellInfo[i].roll > 2/8){
 		convertedgfthofs.push(i)
 	}
 }
