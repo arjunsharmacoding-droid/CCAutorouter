@@ -228,7 +228,7 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 					}
 				
 	}
-		if (mana >= 22 && mana <= 28){
+		if (mana >= 22 && mana <= 25){
 			if (randomSeed > 1/3 && randomSeed < 7/8){
 				return 0
 		}
@@ -248,6 +248,26 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 					}
 				}
 	}
+		if (mana >= 25.5 && mana <= 28){
+			if (randomSeed > 1/3 && randomSeed < 7/8){
+				return 0
+		}
+			if (randomSeed > 3/8 && randomSeed < 4/8 && randomSeed2) {
+				return 0
+			}
+				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8)){
+				return getSpellCost(4, 0, mana, true) // dont cast g!di if it messes with things
+				}
+				if (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) {
+					return getSpellCost(4, 0, mana, true) // dont cast g!st backfire
+				} else {
+					if (di && randomSeed < 0.835){
+					return Math.min(getSpellCost(7, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+					} else {
+						return Math.min(getSpellCost(4, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+					}
+				}
+	}
 		if (mana >= 28.5 && mana <= 29){
 			if (randomSeed > 2/4 && randomSeed < 7/8){
 				return 0
@@ -259,15 +279,15 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 				return 0
 			}
 				if ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8)){
-				return getSpellCost(0, 0, mana, true) // dont cast g!di if it messes with things
+				return getSpellCost(4, 0, mana, true) // dont cast g!di if it messes with things
 				}
 				if (!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) {
-					return getSpellCost(0, 0, mana, true) // dont cast g!st backfire
+					return getSpellCost(4, 0, mana, true) // dont cast g!st backfire
 				} else {
 					if (di && randomSeed < 0.835){
 					return Math.min(getSpellCost(7, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
 					} else {
-						return Math.min(getSpellCost(0, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
+						return Math.min(getSpellCost(4, 0, mana, true), getSpellCost(8, Math.floor(randomSeed*8)+1, mana, true))
 					}
 				}
 	}
@@ -279,11 +299,11 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 				return 0
 			}
 		let options = []
-		// cast di or cast cbg
+		// cast di or cast hc
 		if (di && randomSeed < 0.835){
 			options.push(getSpellCost(7,0,mana,true))
 		} else {
-			options.push(getSpellCost(0,0,mana,true))
+			options.push(getSpellCost(4,0,mana,true))
 		}
 		// cast gfd or dont cast gfd because of g!st/g!di backfire
 		if ((!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) || ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8))){
@@ -308,11 +328,11 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 				return 0
 			}
 		let options = []
-		// cast di or cast cbg
+		// cast di or cast hc
 		if (di && randomSeed < 0.835){
 			options.push(getSpellCost(7,0,mana,true))
 		} else {
-			options.push(getSpellCost(0,0,mana,true))
+			options.push(getSpellCost(4,0,mana,true))
 		}
 		// cast gfd or dont cast gfd because of g!st/g!di backfire
 		if ((!randomSeed2 && randomSeed < 3/8 && randomSeed > 2/8) || ((!randomSeed2 && randomSeed > 7/8) || (!di && randomSeed > 7/8))){
