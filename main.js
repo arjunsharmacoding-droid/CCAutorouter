@@ -633,56 +633,49 @@ function getSkipCost(mana, randomSeed, randomSeed2, gfds, di){
 // you probably could implement binary search to go through the mana counts faster, but optimising this isnt that important since its precomputed
 function getOffsetCost(offset) {
 		let out = []
-		let initialCost = 0
+		let minInitialCost = 0
 		let offsetLength = offset[0]-offset[1]
 		let lastgfthof = 0;
-		let lastgse; // this refers to the last g!fthof which requires g!se in the pool, which may be none of them.
+		let lastgse = -Infinity; // this refers to the last g!fthof which requires g!se in the pool, which may be none of them.
+		// this loop goes from first gfd to last gfd in the offset
 		for (let j=offsetLength-1; j>=0; j--) {
 			if (gfthofs.includes(offset[0] - j)) {
 				// number of gfd casts before the last g!fthof in the offset
 				lastgfthof = offsetLength-j-1;
 			}
-			if (rolls[offset[0] - j] < 2/7 && rolls[offset[0] - j] > 2/8) {
-				lastgse = offsetLength-j;
+			if (rolls[offset[0] - j] < 1/7 && rolls[offset[0] - j] > 1/8) {
+				lastgse = offsetLength-j-1;
 			}
 		}
-			// this loop finds the minimum amount needed for the offset
+			// this loop finds the minimum amount needed for the offset. theres the g!fthof and g!se being in the pool that is considered as well as how g!di needs to be in the pool on the last gfd so gfd can select something
+			// g!di isnt always the cheapest but in the cases where affording at least 1 thing in the pool is the highest cost then g!di is cheapest
 			for (let i=14; true; i++) {
-				if (getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 2, i, true) < i) {
-					if (lastgse == undefined){
-						// if there is no last gse, take the number of gfd casts before the last fthof, minus one, plus the cost of 1 whole g!fthof (because gfd needs to select fthof)
-						// also this one whole g!fthof includes the initial cost of gfd, hence the -1
-					initialCost = getSpellCost(8, 0, i, true)*(lastgfthof-1)+getSpellCost(8, 2, i, true);
-					break
-} else { 
-				// more of the same but account for lastgse because it exists (we need the cost of a g!se instead of a g!fthof and what not). then take the higher of the two values for the initial cost
-				if (getSpellCost(8, 0, i, true)*lastgse+getSpellCost(8, 3, i, false) < i){
-					initialCost = Math.max(getSpellCost(8, 0, i, true)*(lastgfthof-1)+getSpellCost(8, 2, i, true), getSpellCost(8, 0, i, true)*(lastgse-1)+getSpellCost(8, 3, i, false));
-					break
-}
-	
-}
+				let offsetCost = Math.max(getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 2, i, true), getSpellCost(8, 0, i, true)*lastgse+getSpellCost(8, 3, i, true), getSpellCost(8, 0, i, true)*(offsetLength-1)+getSpellCost(8, 7, i, true))
+				if (offsetCost < i){
+					minInitialCost = i
 				}
 			}
-		let maxFinalMana = [initialCost, -Infinity]
+		let maxFinalMana = [minInitialCost, -Infinity]
 		// this loop finds the initial max magic number that maximises mana after refilling (can be the same as the lowest mana needed at times)
-	for (let i=initialCost; i <= 66; i++) {
+		// on the first iteration it pushes the min inital max mana and the final cost resulting from it into the array
+	for (let i=minInitialCost; i <= 66; i++) {
 		let finalMana = 100+i
+		let offsetCost =  Math.max(getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 2, i, true), getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 3, i, true), getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 7, i, true))
 		for (let j=0; j<offsetLength; j++) {
 		finalMana -= getSpellCost(8, choose(getSpellPool(i, i), rolls[offset[0]-j]), i, true);
 		}
-		if (finalMana > maxFinalMana[1]) {
+		if (finalMana > maxFinalMana[1] && offsetCost < i) {
 			maxFinalMana = [i, finalMana]
 		}
-		if (i == initialCost){
-		out.push([initialCost, finalMana])
+		if (i == minInitialCost){
+		out.push([minInitialCost, finalMana])
 		}
 	}
 out.push(maxFinalMana)
 return out
 }
 
-// get random element from array
+// get element from array with a random call
 function choose(arr, roll) {
 	return arr[Math.floor(roll * arr.length)];
 }
@@ -747,6 +740,7 @@ for (let i = 0; i < 30; i++) {
 // make arrays for g!fthofs, bses, efs, and cfs in the range of casts
 let gfthofs = []
 let convertedgfthofs = [] // g!fthofs that are only g!fthofs if se is removed
+let convertedgfthofs2 = [] // g!fthofs that are only g!fthofs if se and ra are removed
 let bses = []
 let dfbses = []
 let efs = []
@@ -764,10 +758,13 @@ for (let i = 0; i < 30; i++) {
 		dfbs  : (outcomes[i][4] == "Building Special" || outcomes[i][5] == "Building Special") && !bses.includes(i),
 		cf    : outcomes[i][0] == "Click Frenzy" || outcomes[i][1] == "Click Frenzy"
 	});
-	if (spellInfo[i].roll > 2/8 && spellInfo[i].roll < 3/8){
+	if (spellInfo[i].roll > 1/8 && spellInfo[i].roll < 2/8){
 		gfthofs.push(i)
 	}
 	if (spellInfo[i].roll < 2/7 && spellInfo[i].roll > 2/8){
+		convertedgfthofs.push(i)
+	}
+	if (spellInfo[i].roll < 2/6 && spellInfo[i].roll > 2/7){
 		convertedgfthofs.push(i)
 	}
 }
