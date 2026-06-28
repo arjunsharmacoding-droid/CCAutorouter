@@ -650,7 +650,7 @@ function getOffsetCost(offset) {
 			// this loop finds the minimum amount needed for the offset. theres the g!fthof and g!se being in the pool that is considered as well as how g!di needs to be in the pool on the last gfd so gfd can select something
 			// g!di isnt always the cheapest but in the cases where affording at least 1 thing in the pool is the highest cost then g!di is cheapest
 			for (let i=14; true; i++) {
-				let offsetCost = Math.max(getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 2, i, true), getSpellCost(8, 0, i, true)*lastgse+getSpellCost(8, 3, i, true), getSpellCost(8, 0, i, true)*(offsetLength-1)+getSpellCost(8, 7, i, true))
+				let offsetCost = Math.max(getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 2, i, true), getSpellCost(8, 0, i, true)*lastgse+getSpellCost(8, 4, i, true), getSpellCost(8, 0, i, true)*(offsetLength-1)+getSpellCost(8, 8, i, true))
 				if (offsetCost < i){
 					minInitialCost = i
 				}
@@ -660,7 +660,7 @@ function getOffsetCost(offset) {
 		// on the first iteration it pushes the min inital max mana and the final cost resulting from it into the array
 	for (let i=minInitialCost; i <= 66; i++) {
 		let finalMana = 100+i
-		let offsetCost =  Math.max(getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 2, i, true), getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 3, i, true), getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 7, i, true))
+		let offsetCost =  Math.max(getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 2, i, true), getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 4, i, true), getSpellCost(8, 0, i, true)*lastgfthof+getSpellCost(8, 8, i, true))
 		for (let j=0; j<offsetLength; j++) {
 		finalMana -= getSpellCost(8, choose(getSpellPool(i, i), rolls[offset[0]-j]), i, true);
 		}
